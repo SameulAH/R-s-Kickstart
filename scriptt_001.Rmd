@@ -1,0 +1,70 @@
+---
+title: "R's Kickstart Workshop"
+author: "Ismail Ahouari"
+date: "2024-11-14"
+output: html_document
+---
+
+```{r}
+#install.packages("readxl")
+library(readxl)
+```
+Let's install the required packages
+
+```{r}
+getwd()
+```
+
+
+
+
+```{r}
+path.workshop <- file.path("C:/Users/sam/Desktop/C2DH/R workshop/data", "1914.xlsx")
+path.workshop
+
+workshop <-read_excel(path.workshop)
+print(workshop)
+
+```
+
+
+```{r}
+
+head(workshop)
+
+```
+
+
+```{r}
+tail(workshop) 
+
+```
+ 
+ Displays the structure of the dataframe, including column names, types, and first few entries.
+```{r}
+str(workshop)
+```
+
+# Opens the dataframe in a spreadsheet-like viewer (only works in RStudio or Jupyter #
+```{r}
+View(workshop) 
+```
+
+
+# Provides a summary (e.g., mean, min, max for numeric columns)
+```{r}
+summary(workshop)
+```
+
+
+
+
+```{r}
+# Check for missing values
+colSums(is.na(workshop))
+
+```
+
+```{r}
+unique(workshop$enfants) 
+```
