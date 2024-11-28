@@ -5,7 +5,19 @@ date: "2024-11-28"
 output: pdf_document
 ---
 
+# Install these packages first!
+```{r}
+install.packages("ggplot2")
+install.packages("dplyr")
+install.packages("readr")
+```
 
+
+```{r}
+library("ggplot2")
+library("dplyr")
+library("readr")
+```
 
 ############################
 #############################
