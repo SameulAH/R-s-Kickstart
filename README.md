@@ -14,18 +14,6 @@ Welcome to the R's Kickstart workshop! This repository contains all the material
 ## Introduction
 This workshop is designed for beginners who are new to R programming. Throughout the workshop, you will learn the basics of R, including data manipulation, visualization, and basic statistical analysis.
 
-## Setup
-To get started with the workshop, follow these steps:
-1. **Install R**: Download and install R from [CRAN](https://cran.r-project.org/).
-2. **Install RStudio**: Download and install RStudio from [RStudio](https://www.rstudio.com/products/rstudio/download/).
-3. **Clone the Repository**: Clone this repository to your local machine using:
-   ```bash
-   git clone https://github.com/SameulAH/R-s-Kickstart.git
-   ```
-4. **Install Required Packages**: Open RStudio and run the following command to install the necessary packages:
-   ```R
-   install.packages(c("package1", "package2", "package3"))
-   ```
 
 ## Workshop Agenda
 The workshop is divided into the following sections:
