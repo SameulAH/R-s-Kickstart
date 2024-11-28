@@ -251,6 +251,61 @@ colnames(my_df) <- c("Letters", "Digits")
 rownames(my_df) <- c("Row1", "Row2", "Row3", "Row4")
 ```
 
+##################
+##################
+###  APPLICATION OF THIS MODULE
+
+##1- Create a vector city_names with the names of your favorite cities.
+##Use: "Mumbai", "Delhi", "Bangalore", "Hyderabad".
+
+```{r}
+
+```
+
+
+##2-Create a vector city_population with the population of each of these cities in millions (or approximate numbers if exact data is unavailable).
+#Use: 12442373, 11007835, 8436675, 6809970.
+```{r}
+
+```
+
+
+#3- Create a data frame using the two vectors above and assign it the name city_info.
+
+```{r}
+
+```
+
+
+
+#4- Change the column labels in the data frame to City_Name and Population, and set the row names to (Rank 1, Rank 2, Rank 3, and Rank 4), assuming rank
+#corresponds to the order of cities in terms of population.
+
+```{r}
+
+```
+
+
+#5- Extract the Population column from the city_info data frame.
+```{r}
+
+```
+
+
+
+#6- Calculate the total population of all cities combined.
+```{r}
+
+```
+
+
+
+#7- Verify the structure of the data frame using a suitable function and request a summary of the data.
+
+```{r}
+
+```
+
 
 
 
