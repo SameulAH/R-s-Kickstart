@@ -25,7 +25,7 @@ The workshop is divided into the following sections:
 
 
 ## Resources
-If you are having issue with installing the R on your local machine, you can use R on the cloud right on your browser, you can finf all the files in here:
+If you are having issues with installing R on your local machine,  you can use this service to access R directly from your browser. All the necessary files can be found here:
 https://posit.cloud/content/9361785
 
 Here are some useful resources to help you with R programming:
