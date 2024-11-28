@@ -37,6 +37,9 @@ The workshop is divided into the following sections:
 
 
 ## Resources
+If you are having issue with installing the R on your local machine, you can use R on the cloud right on your browser, you can finf all the files in here:
+https://posit.cloud/content/9361785
+
 Here are some useful resources to help you with R programming:
 - [R Documentation](https://www.rdocumentation.org/)
 - [RStudio Cheatsheets](https://www.rstudio.com/resources/cheatsheets/)
