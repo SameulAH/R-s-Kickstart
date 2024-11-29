@@ -1,0 +1,566 @@
+---
+title: "R's Kickstart Workshop"
+author: "Ismail Ahouari & Mehdi Moualim"
+date: "2024-11-14"
+output:
+  word_document: default
+  html_document: default
+  pdf_document: default
+---
+
+```{r}
+#install.packages("readr")
+library(readr)
+#install.packages("dplyr")
+library(dplyr)
+library(ggplot2)
+
+```
+
+```
+Let's install the required packages
+
+
+
+
+```{r}
+# Import dataset from the URL
+url<- "https://raw.githubusercontent.com/SameulAH/R-s-Kickstart/refs/heads/main/data/1914_dataset.csv"
+workshop <- read.csv(url)
+```
+
+
+# Display the first 5-rows of the dataset
+```{r}
+head(workshop,5)
+
+```
+# Display the last 5-rows of the dataset
+
+```{r}
+tail(workshop,5) 
+
+```
+ 
+ 
+# Displays the structure of the dataframe, including column names, types, and first few entries.
+```{r}
+str(workshop)
+```
+
+# Opens the dataframe in a spreadsheet-like viewer(only works in RStudio ) using view()function 
+```{r}
+#View(workshop) 
+```
+
+
+# Provides a summary (e.g., mean, min, max for numeric columns)
+```{r}
+summary(workshop)
+```
+
+
+Now that we have confirmed these two columns are not relevant to our dataset, drop them using the select() function and assign the result to a new variable
+```{r}
+
+new_workshop <- workshop %>% select(.,- X..1, - X..)
+
+```
+
+
+
+
+Before going any further we need to make this column names compatible with R IDE "lieu de naissance et date ", "mère-naissance", and "conjoint-naissance" .....
+we need to rename them.ex. ("lieu de naissance et date","état civil",..)
+
+
+```{r}
+colnames(workshop)
+
+```
+
+```{r}
+# Replace spaces and hyphens with underscores in column names
+colnames(workshop) <- gsub("[.-]", "_", colnames(workshop))
+
+# View the updated column names
+print(colnames(workshop))
+
+```
+
+
+# use filter() to keep only rows where Etat_civil is "verheiratet", to keep only married individuals
+```{r}
+verheiratet <- workshop %>% filter(état_civil == "verheiratet")
+head(verheiratet,8)
+
+```
+
+
+After renaming the columns, we can investigate the NaN values and determine the most suitable technique to handle them.
+Check for NaN values in the entire dataset using is.nan()
+```{r}
+
+# Check for missing values
+colSums(is.na(workshop))
+
+```
+
+
+- Have a look inside the these NA values columns for any clues or pattern how to managed them by using Select( ) function   
+```{r}
+workshop_selected <- workshop %>%
+  select(mariage_date,conjoint,conjoint_naissance,enfants,situation_résidence)
+head(workshop_selected,13)
+```
+
+
+
+
+
+Let check What's inside these Nan-attribute in our dataset and see what are the option to deal with these imperfection in our dataset:
+
+- If data is categorical:
+Fill missing values with "unknown" or the most frequent category.
+- If data is numerical:
+Use mean, median, or predictive imputation based on distribution.
+- If missing data is substantial:
+Consider dropping the feature or using advanced imputation techniques like KNN or multiple imputation.
+
+
+
+
+from view funtion we can notice the pattern that these NA values follow we can only replace the NA value with ,   and the only option left in this case is to drop them or replace NA with "unknown"
+
+```{r}
+# Replace all NA values with "unknown"
+workshop[is.na(workshop)] <- "unknown"
+
+# View the updated data frame
+head(workshop)
+
+
+```
+
+
+Let's check if there are still any NA-value
+```{r}
+# Check for missing values
+colSums(is.na(workshop))
+```
+
+use view() function to 
+```{r}
+View(workshop)
+```
+
+###################################
+
+##Data Visualization:
+
+
+
+
+#Data Visualization:
+
+# R Data Visualization Workshop
+## Exploring the 1914 Immigration Dataset
+
+###  Basic Data Exploration
+
+Now Lets begin the fun part of this workshop:
+
+
+`
+#### Exercise: Nationality Analysis
+ Which are the most common nationalities in our dataset?
+
+You can use a Bar Chart
+
+We need to see first the unique values in that column
+
+```{r}
+unique(workshop$nationalité)
+
+```
+and we should do some big cleaning 
+
+
+```{r}
+# Convert to lowercase for consistency
+workshop$nationalité <- tolower(workshop$nationalité)
+
+# Remove text in parentheses (e.g., "(naturalisiert)")
+workshop$nationalité <- gsub("\\s*\\(.*\\)", "", workshop$nationalité)
+
+
+# Map regions to countries
+
+# Germany
+workshop$nationalité[workshop$nationalité %in% c("deutscher", "deutsche", "preusse", "preussen", 
+                                                 "hessen nassauer", "sachse", "böhmer", "böhme", 
+                                                 "prussian", "bayer", "german", "saxon")] <- "germany"
+
+# France
+workshop$nationalité[workshop$nationalité %in% c("franzose", "französin", "franzosin", 
+                                                 "elsasser", "elsässer", "elsässerin", 
+                                                 "lothringer", "lothringerin", "lothringen","french", "lorrainian", "alsatian")] <- "france"
+
+# Italy
+workshop$nationalité[workshop$nationalité %in% c("italiener", "italienerin", "tyroler", "italian")] <- "italy"
+
+# Austria
+workshop$nationalité[workshop$nationalité %in% c("oesterreicher", "oestreicher", "oestreicherin", 
+                                                 "oesterreicherin", "oesterreiecher", "tyrolean","galizier", "austrian")] <- "austria"
+
+# Belgium
+workshop$nationalité[workshop$nationalité %in% c("belgier", "belgierin", "begier")] <- "belgium"
+
+# Switzerland
+workshop$nationalité[workshop$nationalité %in% c("schweitzer")] <- "switzerland"
+
+# Netherlands
+workshop$nationalité[workshop$nationalité %in% c("holländer", "dutch")] <- "netherlands"
+
+# Luxembourg
+workshop$nationalité[workshop$nationalité %in% c("luxemburgerin")] <- "luxembourg"
+
+# Poland
+workshop$nationalité[workshop$nationalité %in% c("pole", "galacian", "polish")] <- "poland"
+
+# Russia
+workshop$nationalité[workshop$nationalité %in% c("russe")] <- "russia"
+
+
+
+
+# Confirm cleaned values
+unique(workshop$nationalité)
+
+
+# Trim whitespace
+workshop$nationalité <- trimws(workshop$nationalité)
+
+# Check the unique values again
+unique(workshop$nationalité)
+
+```
+
+
+
+
+```{r}
+# Simple bar plot of nationalities
+ggplot(workshop, aes(x = nationalité)) +
+    geom_bar(fill = "coral") +
+    coord_flip() +
+    theme_minimal() +
+    labs(title = "Distribution of Nationalities",
+         x = "Nationality",
+         y = "Count")
+
+```
+
+
+
+ Change the orientation to horizontal bars
+
+
+
+
+### Can you give us the proportion of Nationalities
+
+Think about a pie chart
+```{r}
+# Count Nationalities
+nationality_counts <- table(workshop$nationalité)
+
+ggplot(workshop, aes(x = "", fill = nationalité)) +
+  geom_bar(width = 1, color = "white") +
+  coord_polar("y") +
+  labs(
+    title = "Proportion of Nationalities",
+    fill = "Nationality"
+  ) +
+  theme_minimal()
+
+```
+
+Or
+```{r}
+ggplot(workshop, aes(x = "", y = nationalité, fill = nationalité)) + geom_bar(stat = "identity", width = 1) + coord_polar(theta = "y") + 
+theme_void() + # Remove background grid and axis 
+labs(title = "Pie Chart")
+```
+
+
+```
+
+
+
+Data Cleaning état_civil
+```{r}
+# Step 1: Convert to lowercase for consistency
+workshop$état_civil <- tolower(workshop$état_civil)
+
+# Step 2: Standardize marital statuses
+workshop$état_civil <- ifelse(grepl("verheiratet", workshop$état_civil), "married", 
+                        ifelse(grepl("ledig", workshop$état_civil), "single", 
+                        ifelse(grepl("witwe|witwer", workshop$état_civil), "widowed", 
+                        ifelse(grepl("geschieden", workshop$état_civil), "divorced", 
+                        ifelse(grepl("wilder ehe", workshop$état_civil), "cohabiting", 
+                        "other")))))
+
+# Step 3: Verify the unique values
+unique(workshop$état_civil)
+
+```
+
+```{r}
+# Stacked Bar Chart for Marital Status by Nationality
+ggplot(workshop, aes(x = nationalité, fill = état_civil)) +
+  geom_bar(position = "stack", alpha = 0.8) +
+  coord_flip() +
+  labs(
+    title = "Marital Status by Nationality",
+    x = "Nationality",
+    y = "Count",
+    fill = "Marital Status"
+  ) +
+  theme_minimal()
+
+
+```
+
+
+
+
+```
+
+
+
+
+
+
+
+
+```{r}
+library(ggplot2)
+
+# Scatter plot with jitter for categorical data
+library(dplyr)
+
+# Summarize data by nationality and marital status
+summary_data <- workshop %>%
+  group_by(nationalité, état_civil) %>%
+  summarise(count = n(), .groups = "drop")
+
+# Bubble chart
+ggplot(summary_data, aes(x = nationalité, y = état_civil, size = count)) +
+  geom_point(alpha = 0.7, color = "purple") +
+  scale_size_continuous(range = c(3, 10)) +
+  labs(
+    title = "Bubble Chart: Nationality vs Marital Status",
+    x = "Nationality",
+    y = "Marital Status",
+    size = "Count"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+
+
+```
+
+
+
+
+
+
+
+Can You please filter with just people that are german and show us a pie chart about their civil status
+
+```{r}
+# Example for one nationality (repeat for others if needed)
+specific_nationality <- workshop %>% filter(nationalité == "germany")
+
+ggplot(specific_nationality, aes(x = "", fill = état_civil)) +
+  geom_bar(width = 1) +
+  coord_polar(theta = "y") +
+  labs(
+    title = "Pie Chart: Marital Status Distribution (Germany)",
+    fill = "Marital Status"
+  ) +
+  theme_minimal()
+
+```
+
+
+
+
+
+# Diamond Dataset Analysis
+
+## Data Overview
+```{r}
+library(ggplot2)
+data(diamonds)
+```
+lets see the first 6 rows of the dataset 
+
+```{r}
+head(diamonds)
+```
+
+
+1.How many variables are in the diamonds dataset? 
+2.What are the types of each variable? 
+3.How many observations are there? 
+
+##1.Histogram:Price Distribution
+```{r}
+ggplot(diamonds, aes(x = price)) +
+geom_histogram(fill = "skyblue", color = "black") +
+labs(title = "Distribution of Diamond Prices",
+x = "Price (USD)",
+y = "Frequency")
+```
+
+
+1. What is the most common price range for diamonds?
+2. Are there any outliers in the price distribution?
+
+##2. Box Plot : Price  by Cut
+```{r}
+ggplot(diamonds, aes(x = cut, y = price, fill = cut)) +
+geom_boxplot() +
+labs(title = "Diamond Prices by Cut Quality",
+x = "Cut",
+y = "Price (USD)")
+```
+
+1. Which cut category has the highest median price?
+2. Which cut shows the most price variation?
+3. Are there many outliers? What might these represent?
+
+we can also use the simple version of ggplots and try with violin plot 
+```{r}
+ggplot(diamonds, aes(price, cut)) + geom_violin()
+
+```
+
+
+##3 Scatter Plot: Price vs Carat
+
+```{r}
+ggplot(diamonds, aes(x = carat, y = price, color = cut)) +
+geom_point(alpha = 0.5) +
+labs(title = "Diamond Price vs Carat Weight",
+x = "Carat",
+y = "Price (USD)")
+```
+
+
+1. What type of relationship exists between price and carat?
+2. How does cut quality affect this relationship?
+3. What pattern do you notice about price variation as carat size increases?
+
+##  4. Bar Chart : Count by Clarity
+```{r}
+ggplot(diamonds, aes(x = clarity, fill = clarity)) +
+geom_bar() +
+labs(title = "Distribution of Diamond Clarity Grades",
+x = "Clarity",
+y = "Count")
+```
+
+1. Which clarity grade is most common?
+2. Which is least common?
+3. Is there a pattern in the distribution?
+
+##5. Heat Map: Price by Cut and Clarity
+
+```{r}
+diamonds_summary <- aggregate(price ~ cut + clarity,
+data = diamonds,
+FUN = mean)
+
+ggplot(diamonds_summary, aes(x = cut, y = clarity, fill = price)) +
+geom_tile() +
+scale_fill_viridis_c() +
+labs(title = "Average Diamond Price by Cut and Clarity",
+fill = "Average Price")
+```
+
+
+1. Which combination of cut and clarity yields the highest average price?
+2. What patterns do you notice in the heat map?
+3. How does clarity affect price within each cut category?
+
+## 6. Density Plot: Carat by Cut
+
+```{r}
+ggplot(diamonds, aes(x = carat, fill = cut)) +
+geom_density(alpha = 0.5) +
+labs(title = "Distribution of Carat Weight by Cut",
+x = "Carat",
+y = "Density")
+
+
+```
+
+
+
+1. Which cut tends to have larger carat sizes?
+2. How do the distributions differ between cuts?
+3. Are there any unusual patterns?
+
+## 7. Bubble Plot: Price, Carat, and Cut
+
+```{r}
+ggplot(diamonds, aes(x = carat, y = price, size = depth, color = cut)) +
+geom_point(alpha = 0.6) +
+labs(title = "Diamond Price vs Carat with Depth",
+x = "Carat",
+y = "Price (USD)",
+size = "Depth")
+```
+
+
+1. How does depth relate to price and carat?
+2. Which cut shows the most variation in depth?
+3. What patterns do you notice about larger diamonds?
+
+
+```{r}
+
+```
+
+```{r}
+
+```
+
+
+```{r}
+
+```
+
+```{r}
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
