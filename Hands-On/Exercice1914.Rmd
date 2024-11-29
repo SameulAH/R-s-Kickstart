@@ -1,0 +1,629 @@
+---
+title: "R's Kickstart Workshop"
+author: "Ismail Ahouari&Mehdi Moualim"
+date: "2024-11-14"
+output:
+  word_document: default
+  html_document: default
+  pdf_document: default
+---
+
+```{r}
+#install.packages("readr")
+library(readr)
+#install.packages("dplyr")
+library(dplyr)
+
+```
+
+```
+Let's install the required packages
+
+
+
+
+```{r}
+# Import dataset from the URL
+url<- "https://raw.githubusercontent.com/SameulAH/R-s-Kickstart/refs/heads/main/data/1914_dataset.csv"
+workshop <- read.csv(url)
+
+workshop
+
+```
+
+
+# Display the first 5-rows of the dataset
+```{r}
+
+```
+# Display the last 5-rows of the dataset
+
+```{r}
+ 
+
+```
+ 
+ 
+# Displays the structure of the dataframe, including column names, types, and first few entries.
+```{r}
+
+```
+
+# Opens the dataframe in a spreadsheet-like viewer(only works in RStudio ) using view()function 
+```{r}
+ 
+```
+
+
+# Provides a summary (e.g., mean, min, max for numeric columns)
+```{r}
+
+```
+
+
+Now that we have confirmed these two columns are not relevant to our dataset, drop them using the select() function and assign the result to a new variable
+```{r}
+
+
+
+```
+
+
+
+
+Before going any further we need to make this column names compatible with R IDE "lieu de naissance et date ", "mère-naissance", and "conjoint-naissance" .....
+we need to rename them.ex. ("lieu de naissance et date","état civil",..)
+
+
+```{r}
+
+
+```
+
+```{r}
+# Replace spaces and hyphens with underscores in column names
+colnames(workshop) <- gsub("[.-]", "_", colnames(workshop))
+
+# View the updated column names
+print(colnames(workshop))
+
+```
+
+
+# use filter() to keep only rows where Etat_civil is "verheiratet", to keep only married individuals
+```{r}
+
+```
+
+
+After renaming the columns, we can investigate the NaN values and determine the most suitable technique to handle them.
+Check for NaN values in the entire dataset using is.nan()
+```{r}
+
+
+```
+
+
+- Have a look inside the these NA values columns for any clues or pattern how to managed them by using Select( ) function   
+```{r}
+
+```
+
+
+
+
+
+Let check What's inside these Nan-attribute in our dataset and see what are the option to deal with these imperfection in our dataset:
+
+- If data is categorical:
+Fill missing values with "unknown" or the most frequent category.
+- If data is numerical:
+Use mean, median, or predictive imputation based on distribution.
+- If missing data is substantial:
+Consider dropping the feature or using advanced imputation techniques like KNN or multiple imputation.
+
+
+
+
+from view funtion we can notice the pattern that these NA values follow we can only replace the NA value with ,   and the only option left in this case is to drop them or replace NA with "unknown"
+
+```{r}
+
+
+
+```
+
+
+Let's check if there are still any NA-value
+```{r}
+
+```
+
+use view() function to 
+```{r}
+
+```
+
+
+
+###################################
+
+##Data Visualization:
+
+
+
+
+#Data Visualization:
+
+# R Data Visualization Workshop
+## Exploring the 1914 Immigration Dataset
+
+###  Basic Data Exploration
+
+Now Lets begin the fun part of this workshop:
+
+
+`
+#### Exercise: Nationality Analysis
+ Which are the most common nationalities in our dataset?
+
+You can use a Bar Chart
+
+We need to see first the unique values in that column
+
+```{r}
+unique(workshop$nationalité)
+
+```
+and we should do some big cleaning 
+
+
+```{r}
+# Convert to lowercase for consistency
+workshop$nationalité <- tolower(workshop$nationalité)
+
+# Remove text in parentheses (e.g., "(naturalisiert)")
+workshop$nationalité <- gsub("\\s*\\(.*\\)", "", workshop$nationalité)
+
+
+# Map regions to countries
+
+# Germany
+workshop$nationalité[workshop$nationalité %in% c("deutscher", "deutsche", "preusse", "preussen", 
+                                                 "hessen nassauer", "sachse", "böhmer", "böhme", 
+                                                 "prussian", "bayer", "german", "saxon")] <- "germany"
+
+# France
+workshop$nationalité[workshop$nationalité %in% c("franzose", "französin", "franzosin", 
+                                                 "elsasser", "elsässer", "elsässerin", 
+                                                 "lothringer", "lothringerin", "lothringen","french", "lorrainian", "alsatian")] <- "france"
+
+# Italy
+workshop$nationalité[workshop$nationalité %in% c("italiener", "italienerin", "tyroler", "italian")] <- "italy"
+
+# Austria
+workshop$nationalité[workshop$nationalité %in% c("oesterreicher", "oestreicher", "oestreicherin", 
+                                                 "oesterreicherin", "oesterreiecher", "tyrolean","galizier", "austrian")] <- "austria"
+
+# Belgium
+workshop$nationalité[workshop$nationalité %in% c("belgier", "belgierin", "begier")] <- "belgium"
+
+# Switzerland
+workshop$nationalité[workshop$nationalité %in% c("schweitzer")] <- "switzerland"
+
+# Netherlands
+workshop$nationalité[workshop$nationalité %in% c("holländer", "dutch")] <- "netherlands"
+
+# Luxembourg
+workshop$nationalité[workshop$nationalité %in% c("luxemburgerin")] <- "luxembourg"
+
+# Poland
+workshop$nationalité[workshop$nationalité %in% c("pole", "galacian", "polish")] <- "poland"
+
+# Russia
+workshop$nationalité[workshop$nationalité %in% c("russe")] <- "russia"
+
+
+
+
+# Confirm cleaned values
+unique(workshop$nationalité)
+
+
+# Trim whitespace
+workshop$nationalité <- trimws(workshop$nationalité)
+
+# Check the unique values again
+unique(workshop$nationalité)
+
+```
+
+
+
+
+```{r}
+# Simple bar plot of nationalities
+
+   
+
+```
+
+
+
+ Change the orientation to horizontal bars
+
+
+
+
+### Can you give us the proportion of Nationalities
+
+Think about a pie chart
+```{r}
+# Count Nationalities
+
+
+ggplot(workshop, aes(x = "", y = nationalité, fill = nationalité)) + geom_bar(stat = "identity", width = 1) + coord_polar(theta = "x") 
+theme_void() + # Remove background grid and axis 
+labs(title = "Pie Chart")
+```
+
+
+
+```
+
+
+
+Data Cleaning état_civil
+```{r}
+# converting to lowercase for consistency
+workshop$état_civil <- tolower(workshop$état_civil)
+
+# Standardize marital statuses
+workshop$état_civil <- ifelse(grepl("verheiratet", workshop$état_civil), "married", 
+                        ifelse(grepl("ledig", workshop$état_civil), "single", 
+                        ifelse(grepl("witwe|witwer", workshop$état_civil), "widowed", 
+                        ifelse(grepl("geschieden", workshop$état_civil), "divorced", 
+                        ifelse(grepl("wilder ehe", workshop$état_civil), "cohabiting", 
+                        "other")))))
+
+# Verify the unique values
+unique(workshop$état_civil)
+
+```
+
+```{r}
+# Stacked Bar Chart for Marital Status by Nationality
+
+
+
+```
+
+
+
+
+```
+
+
+
+
+
+
+
+
+```{r}
+library(ggplot2)
+
+# Scatter plot with jitter for categorical data
+library(dplyr)
+
+# Summarize data by nationality and marital status
+summary_data <- workshop %>%
+  group_by(nationalité, état_civil) %>%
+  summarise(count = n(), .groups = "drop")
+
+# Bubble chart
+ggplot(summary_data, aes(x = nationalité, y = état_civil, size = count)) +
+  geom_point(alpha = 0.7, color = "purple") +
+  scale_size_continuous(range = c(3, 10)) +
+  labs(
+    title = "Bubble Chart: Nationality vs Marital Status",
+    x = "Nationality",
+    y = "Marital Status",
+    size = "Count"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+
+
+```
+
+
+
+
+
+
+
+Can You please filter with just people that are german and show us a pie chart about their civil status
+
+```{r}
+# Example for one nationality (repeat for others if needed)
+specific_nationality <- workshop %>% filter(nationalité == "germany")
+
+ggplot(specific_nationality, aes(x = "", fill = état_civil)) +
+  geom_bar(width = 1) +
+  coord_polar(theta = "y") +
+  labs(
+    title = "Pie Chart: Marital Status Distribution (Germany)",
+    fill = "Marital Status"
+  ) +
+  theme_minimal()
+
+```
+
+
+
+
+
+# Diamond Dataset Analysis
+
+## Data Overview
+```{r}
+library(ggplot2)
+data(diamonds)
+```
+lets see the first 6 rows of the dataset 
+
+```{r}
+head(diamonds)
+```
+
+
+1.How many variables are in the diamonds dataset? 
+2.What are the types of each variable? 
+3.How many observations are there? 
+
+##1.Histogram:Price Distribution
+```{r}
+
+```
+
+
+1. What is the most common price range for diamonds?
+2. Are there any outliers in the price distribution?
+
+##2. Box Plot : Price  by Cut
+```{r}
+
+```
+
+1. Which cut category has the highest median price?
+2. Which cut shows the most price variation?
+3. Are there many outliers? What might these represent?
+
+we can also use the simple version of ggplots and try with violin plot 
+```{r}
+
+
+```
+
+
+##3 Scatter Plot: Price vs Carat
+
+```{r}
+
+```
+
+
+1. What type of relationship exists between price and carat?
+2. How does cut quality affect this relationship?
+3. What pattern do you notice about price variation as carat size increases?
+
+##  4. Bar Chart : Count by Clarity
+```{r}
+
+```
+
+1. Which clarity grade is most common?
+2. Which is least common?
+3. Is there a pattern in the distribution?
+
+##5. Heat Map: Price by Cut and Clarity
+
+```{r}
+
+```
+
+
+1. Which combination of cut and clarity yields the highest average price?
+2. What patterns do you notice in the heat map?
+3. How does clarity affect price within each cut category?
+
+## 6. Density Plot: Carat by Cut
+
+```{r}
+
+
+
+```
+
+
+
+1. Which cut tends to have larger carat sizes?
+2. How do the distributions differ between cuts?
+3. Are there any unusual patterns?
+
+## 7. Bubble Plot: Price, Carat, and Cut
+
+```{r}
+
+```
+
+
+1. How does depth relate to price and carat?
+2. Which cut shows the most variation in depth?
+3. What patterns do you notice about larger diamonds?
+
+
+```{r}
+
+```
+
+# ggplot2 Visualization Guide - Quick Reference
+
+
+#==================================
+# BASIC SETUP
+#==================================
+library(ggplot2)
+library(dplyr)    # For data manipulation
+library(tidyr)    # For data tidying
+
+#==================================
+#  BASIC PLOTS
+#==================================
+
+# Scatter Plot
+ggplot(data, aes(x = x_var, y = y_var)) +
+  geom_point()
+
+# Line Plot
+ggplot(data, aes(x = x_var, y = y_var)) +
+  geom_line()
+
+# Bar Plot
+ggplot(data, aes(x = category)) +
+  geom_bar()
+
+# Histogram
+ggplot(data, aes(x = numeric_var)) +
+  geom_histogram(bins = 30)
+
+#==================================
+#  PLOTS
+#==================================
+
+# Scatter Plot with Trend Line
+ggplot(data, aes(x = x_var, y = y_var)) +
+  geom_point() +
+  geom_smooth(method = "lm")
+
+# Box Plot with Points
+ggplot(data, aes(x = category, y = value)) +
+  geom_boxplot() +
+  geom_jitter(width = 0.2, alpha = 0.5)
+
+# Density Plot
+ggplot(data, aes(x = numeric_var)) +
+  geom_density(fill = "blue", alpha = 0.3)
+
+#==================================
+#  GROUPED VISUALIZATIONS
+#==================================
+
+# Grouped Bar Plot
+ggplot(data, aes(x = category, fill = group)) +
+  geom_bar(position = "dodge")
+
+# Stacked Bar Plot
+ggplot(data, aes(x = category, fill = group)) +
+  geom_bar(position = "stack")
+
+# Grouped Scatter Plot
+ggplot(data, aes(x = x_var, y = y_var, color = group)) +
+  geom_point()
+
+
+
+#==================================
+# CUSTOMIZATION
+#==================================
+
+# Labels and Title
+ggplot(data, aes(x = x_var, y = y_var)) +
+  geom_point() +
+  labs(title = "Main Title",
+       subtitle = "Subtitle",
+       x = "X Label",
+       y = "Y Label")
+
+# Themes
+ggplot(data, aes(x = x_var, y = y_var)) +
+  geom_point() +
+  theme_minimal()
+
+# Custom Colors
+ggplot(data, aes(x = category, fill = group)) +
+  geom_bar() +
+  scale_fill_brewer(palette = "Set3")
+
+#==================================
+#  PLOTS
+#==================================
+
+# Heat Map
+ggplot(data, aes(x = x_var, y = y_var, fill = value)) +
+  geom_tile()
+
+# Bubble Plot
+ggplot(data, aes(x = x_var, y = y_var, size = size_var)) +
+  geom_point(alpha = 0.6)
+
+# Violin Plot
+ggplot(data, aes(x = category, y = value)) +
+  geom_violin()
+
+#==================================
+#  COMBINING ELEMENTS
+#==================================
+
+# Box Plot with Mean Points
+ggplot(data, aes(x = category, y = value)) +
+  geom_boxplot() +
+  stat_summary(fun = "mean", geom = "point", color = "red")
+
+# Scatter Plot with Marginal Distributions
+# Requires ggExtra package
+library(ggExtra)
+p <- ggplot(data, aes(x = x_var, y = y_var)) +
+  geom_point()
+ggMarginal(p, type = "histogram")
+
+#==================================
+#  USEFUL TIPS
+#==================================
+
+# Rotate Axis Labels
+theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+# Add Transparency
+geom_point(alpha = 0.5)
+
+# Remove Legend
+theme(legend.position = "none")
+
+# Save Plot
+ggsave("plot.png", width = 10, height = 6)
+
+#==================================
+#  COMMON DATA TRANSFORMATIONS
+#==================================
+
+# Calculate Means
+data_summary <- data %>%
+  group_by(category) %>%
+  summarise(mean_value = mean(value))
+
+# Create Percentage Plot
+ggplot(data, aes(x = category, fill = group)) +
+  geom_bar(position = "fill") +
+  scale_y_continuous(labels = scales::percent)
+
+
+
+
+
+
+
+
+
