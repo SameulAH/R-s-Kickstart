@@ -1,7 +1,7 @@
 # R's Kickstart Workshop Directory
 
 ## Overview
-Welcome to the R's Kickstart workshop! This repository contains all the materials and resources you need to get started with R programming.
+Welcome to the R's Kickstart Workshop! This repository contains all the materials and resources from the workshop that took place at C²DH (Luxembourg Centre for Contemporary and Digital History). Designed for historians, this session introduced R programming as a powerful tool for organizing and analyzing historical datasets, performing text and statistical analyses, and creating visualizations or maps to uncover insights and enhance research.
 
 ## Table of Contents
 - [Introduction](#introduction)
